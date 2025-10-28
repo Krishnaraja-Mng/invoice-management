@@ -16,3 +16,6 @@ export const AppDataSource = new DataSource({
     entities: [Invoice, Customer, User],
     migrations: [__dirname + "/migration/*.{ts,js}"],
 });
+
+// Export default for TypeORM CLI compatibility
+// export default AppDataSource;

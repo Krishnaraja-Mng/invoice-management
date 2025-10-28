@@ -22,6 +22,14 @@ export class User {
     @Column({ type: "text", nullable: true, unique: true })
     email!: string | null;
 
+    // hashed password, not selected by default for safety
+    @Column({ type: "varchar", length: 255, nullable: true, select: false })
+    password!: string | null;
+
+    // role: 'user' | 'admin'
+    @Column({ type: "varchar", length: 20, nullable: false, default: "user" })
+    role!: string;
+
     @Column({ type: "varchar", length: 500, nullable: true })
     address!: string | null;
 

@@ -6,7 +6,8 @@
         "dev": "ts-node-dev --transpile-only --respawn src/index.ts",
         "build": "tsc -p .",
         "start": "node dist/index.js",
-        "typeorm:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
+        "typeorm:run": "ts-node ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
+        "typeorm:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert -d ./src/data-source.ts",
         "lint": "eslint 'src/**/*.ts'"
     },
     "dependencies": {
@@ -21,11 +22,17 @@
         "typeorm": "^0.3.17"
     },
     "devDependencies": {
+        "@types/bcryptjs": "^3.0.0",
+        "@types/cors": "^2.8.19",
         "@types/express": "^4.17.17",
+        "@types/jsonwebtoken": "^9.0.10",
         "@types/node": "^20.0.0",
         "@typescript-eslint/eslint-plugin": "^6.4.0",
         "@typescript-eslint/parser": "^6.4.0",
+        "cors": "^2.8.5",
         "eslint": "^8.40.0",
+        "install": "^0.13.0",
+        "npm": "^11.6.2",
         "ts-node": "^10.9.1",
         "ts-node-dev": "^2.0.0",
         "typescript": "^5.0.4"

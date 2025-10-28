@@ -1,29 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, FlatList } from "react-native";
-import axios from "axios";
+import "react-native-gesture-handler"; // MUST be at top for gesture handler
+import React, { useContext } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { enableScreens } from "react-native-screens";
+import { AuthProvider, AuthContext } from "./src/context/AuthContext";
+import AuthStack from "./src/navigation/AuthStack";
+import AppStack from "./src/navigation/AppStack";
+import { ActivityIndicator, View } from "react-native";
+import { StatusBar } from "expo-status-bar";
+
+enableScreens();
+
+const RootNavigator: React.FC = () => {
+    const { user, loading } = useContext(AuthContext);
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    }
+
+    return <NavigationContainer>{user ? <AppStack /> : <AuthStack />}</NavigationContainer>;
+};
 
 export default function App() {
-    const [invoices, setInvoices] = useState([]);
-
-    useEffect(() => {
-        axios
-            .get("http://10.0.2.2:4000/invoices") // Android emulator loopback; replace for device
-            .then((r) => setInvoices(r.data))
-            .catch((e) => console.log("err", e));
-    }, []);
-
     return (
-        <View style={{ padding: 24 }}>
-            <Text style={{ fontSize: 24, marginBottom: 12 }}>Invoices</Text>
-            <FlatList
-                data={invoices}
-                keyExtractor={(item: any) => item.id}
-                renderItem={({ item }: any) => (
-                    <View style={{ marginBottom: 8 }}>
-                        <Text>{item.customerName} — {item.total}</Text>
-                    </View>
-                )}
-            />
-        </View>
+        <AuthProvider>
+            <RootNavigator />
+            <StatusBar style="auto" />
+        </AuthProvider>
     );
 }
