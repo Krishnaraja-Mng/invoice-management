@@ -26,6 +26,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    env_file:
+      - ./api/.env
     environment:
       DATABASE_URL: postgresql://postgres:password@postgres:5432/invoices_db
       PORT: 4000

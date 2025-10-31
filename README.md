@@ -36,9 +36,9 @@ A full-stack invoice management application with a REST API backend and React Na
 1. Clone the repository
 2. Copy environment file:
    ```bash
-   cp .env.example .env
+   cp api/.env.example api/.env
    ```
-3. Edit `.env` and set your JWT_SECRET (generate a strong random string)
+3. Edit `api/.env` and set your JWT_SECRET (generate a strong random string)
 4. Start all services:
    ```bash
    docker-compose up --build
@@ -59,7 +59,12 @@ A full-stack invoice management application with a REST API backend and React Na
    npm install
    ```
 
-3. Create a `.env` file in the `api` directory:
+3. Copy and configure the environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   
+4. Edit `.env` and update the values:
    ```bash
    DATABASE_URL=postgresql://postgres:password@localhost:5432/invoices_db
    PORT=4000
@@ -67,22 +72,22 @@ A full-stack invoice management application with a REST API backend and React Na
    CORS_ALLOWED_ORIGINS=http://localhost:19006
    ```
 
-4. Ensure PostgreSQL is running and create the database:
+5. Ensure PostgreSQL is running and create the database:
    ```bash
    psql -U postgres -c "CREATE DATABASE invoices_db;"
    ```
 
-5. Run migrations:
+6. Run migrations:
    ```bash
    npm run typeorm:run
    ```
 
-6. Start the development server:
+7. Start the development server:
    ```bash
    npm run dev
    ```
 
-7. The API will be available at http://localhost:4000
+8. The API will be available at http://localhost:4000
 
 #### Mobile App Setup
 
