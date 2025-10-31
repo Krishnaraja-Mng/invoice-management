@@ -9,12 +9,17 @@
         "emitDecoratorMetadata": true,
         "skipLibCheck": true,
         "resolveJsonModule": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "typeRoots": [
+            "./node_modules/@types",
+            "./src/types"
+        ]
     },
     "include": [
         "src/**/*"
     ],
-    "typeRoots": [
-        "./node_modules/@types"
+    "exclude": [
+        "node_modules",
+        "dist"
     ]
 }

@@ -15,7 +15,12 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     if (!auth || !auth.startsWith("Bearer ")) return res.status(401).json({ message: "Missing token" });
 
     const token = auth.slice("Bearer ".length).trim();
-    const secret = process.env.JWT_SECRET || "change-this-secret";
+    const secret = process.env.JWT_SECRET;
+    
+    if (!secret) {
+        console.error("CRITICAL: JWT_SECRET environment variable is not set!");
+        return res.status(500).json({ message: "Server configuration error" });
+    }
 
     try {
         const payload = jwt.verify(token, secret) as JwtPayload;
@@ -40,7 +45,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
 export function requireRole(role: string) {
     return (req: Request, res: Response, next: NextFunction) => {
-        const u = (req as any).user as { id?: string; role?: string } | undefined;
+        const u = (req as any).user as { id: string; role?: string };
         if (!u || u.role !== role) return res.status(403).json({ message: "Forbidden" });
         next();
     };

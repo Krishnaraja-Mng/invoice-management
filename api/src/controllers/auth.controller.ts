@@ -15,7 +15,7 @@ export class AuthController {
     async register(req: Request, res: Response) {
         try {
             const dto = plainToInstance(RegisterDto, req.body);
-            const errors = await validate(dto as any);
+            const errors = await validate(dto);
             if (errors.length) return res.status(400).json({ errors });
 
             const existing = await this.userRepo.findOneBy({ email: dto.email });
@@ -28,8 +28,8 @@ export class AuthController {
                 email: dto.email,
                 password: hashed,
                 role: "user",
-                createdById: (req as any).user?.id || "00000000-0000-0000-0000-000000000000",
-                updatedById: (req as any).user?.id || "00000000-0000-0000-0000-000000000000",
+                createdById: "00000000-0000-0000-0000-000000000000",
+                updatedById: "00000000-0000-0000-0000-000000000000",
             } as Partial<User>);
 
             const saved = await this.userRepo.save(user);
@@ -43,7 +43,7 @@ export class AuthController {
 
             return res.status(201).json({ user: result, token });
         } catch (err) {
-            console.error(err);
+            console.error("Register error:", err);
             return res.status(500).json({ message: "Internal server error" });
         }
     }
@@ -52,7 +52,7 @@ export class AuthController {
     async login(req: Request, res: Response) {
         try {
             const dto = plainToInstance(LoginDto, req.body);
-            const errors = await validate(dto as any);
+            const errors = await validate(dto);
             if (errors.length) return res.status(400).json({ errors });
 
             // need to select password (select:false in entity)
@@ -74,7 +74,7 @@ export class AuthController {
             const result = { id: user.id, name: user.name, email: user.email, role: user.role };
             return res.json({ user: result, token });
         } catch (err) {
-            console.error(err);
+            console.error("Login error:", err);
             return res.status(500).json({ message: "Internal server error" });
         }
     }

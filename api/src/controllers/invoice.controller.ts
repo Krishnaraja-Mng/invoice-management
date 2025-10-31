@@ -36,14 +36,14 @@ export class InvoiceController {
     async create(req: Request, res: Response) {
         try {
             const dto = plainToInstance(CreateInvoiceDto, req.body);
-            const errors = await validate(dto as any);
+            const errors = await validate(dto);
             if (errors.length > 0) {
                 return res.status(400).json({ errors });
             }
 
             // compute per-line totals
-            const lineItemsInput = (dto as any).lineItems || [];
-            const lineItems: LineItem[] = lineItemsInput.map((li: any) => {
+            const lineItemsInput = dto.lineItems || [];
+            const lineItems: LineItem[] = lineItemsInput.map((li) => {
                 const q = Number(li.quantity) || 0;
                 const up = Number(li.unitPrice) || 0;
                 return {
@@ -86,9 +86,9 @@ export class InvoiceController {
                 status: "draft",
             } as Partial<Invoice>);
 
-            // set audit and ownership fields from authenticated user if available
-            const authUser = (req as any).user as { id?: string } | undefined;
-            if (authUser && authUser.id) {
+            // set audit and ownership fields from authenticated user
+            const authUser = (req as any).user as { id: string; role?: string };
+            if (authUser?.id) {
                 invoice.createdById = authUser.id;
                 invoice.updatedById = authUser.id;
                 invoice.invoiceBelongsToId = authUser.id;
@@ -106,8 +106,8 @@ export class InvoiceController {
     // Supports: page, limit, status, customerId query params
     async list(req: Request, res: Response) {
         try {
-            const user = (req as any).user as { id?: string; role?: string } | undefined;
-            if (!user || !user.id) return res.status(401).json({ message: "Unauthenticated" });
+            const user = (req as any).user as { id: string; role?: string };
+            if (!user?.id) return res.status(401).json({ message: "Unauthenticated" });
 
             const page = Math.max(1, parseInt((req.query.page as string) || "1", 10));
             const limit = Math.min(100, Math.max(1, parseInt((req.query.limit as string) || "20", 10)));
@@ -183,13 +183,13 @@ export class InvoiceController {
             if (!existing) return res.status(404).json({ message: "Not found" });
 
             const dto = plainToInstance(CreateInvoiceDto, req.body);
-            const errors = await validate(dto as any);
+            const errors = await validate(dto);
             if (errors.length > 0) {
                 return res.status(400).json({ errors });
             }
 
-            const lineItemsInput = (dto as any).lineItems || [];
-            const lineItems: LineItem[] = lineItemsInput.map((li: any) => {
+            const lineItemsInput = dto.lineItems || [];
+            const lineItems: LineItem[] = lineItemsInput.map((li) => {
                 const q = Number(li.quantity) || 0;
                 const up = Number(li.unitPrice) || 0;
                 return {
@@ -228,8 +228,8 @@ export class InvoiceController {
             existing.igstPercent = igstPercent;
             existing.totalAmount = totalAmount;
 
-            const authUser = (req as any).user as { id?: string } | undefined;
-            if (authUser && authUser.id) {
+            const authUser = (req as any).user as { id: string; role?: string };
+            if (authUser?.id) {
                 existing.updatedById = authUser.id;
             }
 
