@@ -1,45 +1,205 @@
 ```markdown
-# Invoice Management
+# Invoice Management System
 
-Stack
-- Backend: Node.js + TypeScript + Express
-- ORM: TypeORM
-- Database: PostgreSQL
-- Mobile client: React Native + TypeScript (Expo)
-- Auth: JWT (email/password)
-- Containerization: Docker & docker-compose
-- License: MIT
+A full-stack invoice management application with a REST API backend and React Native mobile client.
 
-Quickstart (local)
-1. Copy .env.example -> .env and fill values.
-2. Build & start with Docker Compose:
+## Stack
+
+- **Backend**: Node.js + TypeScript + Express
+- **ORM**: TypeORM
+- **Database**: PostgreSQL
+- **Mobile client**: React Native + TypeScript (Expo)
+- **Auth**: JWT (email/password)
+- **Containerization**: Docker & docker-compose
+- **License**: MIT
+
+## Features
+
+- ✅ User authentication (register/login)
+- ✅ Invoice CRUD operations with line items
+- ✅ Tax calculations (SGST, CGST, IGST)
+- ✅ Customer management
+- ✅ Role-based access control (user/admin)
+- ✅ Ownership-based authorization
+- ✅ React Native mobile client
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- PostgreSQL 15+ (or Docker)
+- For mobile: Expo CLI and Expo Go app
+
+### Option 1: Docker Compose (Recommended)
+
+1. Clone the repository
+2. Copy environment file:
+   ```bash
+   cp .env.example .env
+   ```
+3. Edit `.env` and set your JWT_SECRET (generate a strong random string)
+4. Start all services:
+   ```bash
    docker-compose up --build
-3. From /api:
+   ```
+5. The API will be available at http://localhost:4000
+
+### Option 2: Local Development
+
+#### Backend Setup
+
+1. Navigate to the API directory:
+   ```bash
+   cd api
+   ```
+
+2. Install dependencies:
+   ```bash
    npm install
+   ```
+
+3. Create a `.env` file in the `api` directory:
+   ```bash
+   DATABASE_URL=postgresql://postgres:password@localhost:5432/invoices_db
+   PORT=4000
+   JWT_SECRET=your-very-secure-secret-key-here
+   CORS_ALLOWED_ORIGINS=http://localhost:19006
+   ```
+
+4. Ensure PostgreSQL is running and create the database:
+   ```bash
+   psql -U postgres -c "CREATE DATABASE invoices_db;"
+   ```
+
+5. Run migrations:
+   ```bash
    npm run typeorm:run
+   ```
+
+6. Start the development server:
+   ```bash
    npm run dev
+   ```
 
-Project layout
-- README.md
-- LICENSE
-- .gitignore
-- .env.example
-- docker-compose.yml
-- /api (backend)
-- /mobile (React Native Expo app)
-- /docs
-- /scripts
-- /tests
+7. The API will be available at http://localhost:4000
 
-Planned initial features
-- Invoice CRUD (line items, subtotal, tax, total)
-- Customer management (basic)
-- JWT auth scaffolding (register/login)
-- Docker + docker-compose for local dev
-- TypeORM entities and migration hooks
-- Basic React Native client to list invoices
+#### Mobile App Setup
 
-Next
-- Create the GitHub repo (instructions below) and push this scaffold.
-- I can then add: CI workflow, migrations, seed scripts, PDF/email sample code, and Stripe integration on request.
+1. Navigate to the mobile directory:
+   ```bash
+   cd mobile
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Update the API URL in `src/config.ts`:
+   ```typescript
+   export const API_URL = "http://localhost:4000"; // or your backend URL
+   ```
+
+4. Start the Expo development server:
+   ```bash
+   npm start
+   ```
+
+5. Scan the QR code with Expo Go (Android) or Camera app (iOS)
+
+## Project Structure
+
+```
+.
+├── api/                    # Backend API
+│   ├── src/
+│   │   ├── controllers/    # Request handlers
+│   │   ├── dto/            # Data transfer objects
+│   │   ├── entities/       # TypeORM entities
+│   │   ├── middleware/     # Express middleware
+│   │   ├── migration/      # Database migrations
+│   │   ├── routes/         # API routes
+│   │   ├── services/       # Business logic
+│   │   └── types/          # TypeScript type definitions
+│   ├── API.md              # API documentation
+│   └── package.json
+├── mobile/                 # React Native app
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── context/        # React context
+│   │   ├── navigation/     # Navigation setup
+│   │   ├── screens/        # App screens
+│   │   ├── services/       # API client
+│   │   └── styles/         # Shared styles
+│   └── package.json
+├── scripts/                # Utility scripts
+├── .env.example            # Environment variables template
+├── docker-compose.yml      # Docker Compose configuration
+└── README.md
+```
+
+## Available Scripts
+
+### Backend (api/)
+
+- `npm run dev` - Start development server with auto-reload
+- `npm run build` - Build TypeScript to JavaScript
+- `npm start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run typeorm:run` - Run migrations
+- `npm run typeorm:revert` - Revert last migration
+
+### Mobile (mobile/)
+
+- `npm start` - Start Expo development server
+- `npm run android` - Run on Android
+- `npm run ios` - Run on iOS
+- `npm run web` - Run in browser
+
+## API Documentation
+
+See [API.md](./api/API.md) for detailed API endpoint documentation.
+
+Quick overview:
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - Login
+- `GET /invoices` - List invoices
+- `POST /invoices` - Create invoice
+- `GET /invoices/:id` - Get invoice
+- `PUT /invoices/:id` - Update invoice
+- `DELETE /invoices/:id` - Delete invoice (admin only)
+
+## Testing
+
+```bash
+# Backend
+cd api
+npm run lint
+npm run build
+
+# Mobile
+cd mobile
+npm start
+```
+
+## Security Notes
+
+⚠️ **Important**: 
+- Always set a strong, unique `JWT_SECRET` in production
+- Never commit `.env` files to version control
+- Use HTTPS in production
+- Review and update CORS_ALLOWED_ORIGINS for production
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run linter and build
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details
 ```

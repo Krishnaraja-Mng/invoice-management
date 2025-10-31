@@ -87,11 +87,10 @@ export class InvoiceController {
             } as Partial<Invoice>);
 
             // set audit and ownership fields from authenticated user
-            const authUser = (req as any).user as { id: string; role?: string };
-            if (authUser?.id) {
-                invoice.createdById = authUser.id;
-                invoice.updatedById = authUser.id;
-                invoice.invoiceBelongsToId = authUser.id;
+            if (req.user?.id) {
+                invoice.createdById = req.user.id;
+                invoice.updatedById = req.user.id;
+                invoice.invoiceBelongsToId = req.user.id;
             }
 
             const saved = await this.invoiceRepo.save(invoice);
@@ -106,7 +105,7 @@ export class InvoiceController {
     // Supports: page, limit, status, customerId query params
     async list(req: Request, res: Response) {
         try {
-            const user = (req as any).user as { id: string; role?: string };
+            const user = req.user;
             if (!user?.id) return res.status(401).json({ message: "Unauthenticated" });
 
             const page = Math.max(1, parseInt((req.query.page as string) || "1", 10));
@@ -228,9 +227,8 @@ export class InvoiceController {
             existing.igstPercent = igstPercent;
             existing.totalAmount = totalAmount;
 
-            const authUser = (req as any).user as { id: string; role?: string };
-            if (authUser?.id) {
-                existing.updatedById = authUser.id;
+            if (req.user?.id) {
+                existing.updatedById = req.user.id;
             }
 
             const saved = await this.invoiceRepo.save(existing);

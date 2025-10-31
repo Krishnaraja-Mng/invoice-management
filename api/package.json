@@ -30,8 +30,6 @@
         "@typescript-eslint/parser": "^6.4.0",
         "cors": "^2.8.5",
         "eslint": "^8.40.0",
-        "install": "^0.13.0",
-        "npm": "^11.6.2",
         "ts-node": "^10.9.1",
         "ts-node-dev": "^2.0.0",
         "typescript": "^5.0.4"

@@ -57,7 +57,7 @@ AppDataSource.initialize()
     });
 
 // Optional: a friendly error handler to return 403 for blocked CORS requests
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     if (err && /CORS/i.test(err.message)) {
         return res.status(403).json({ message: "CORS error: origin not allowed" });
     }

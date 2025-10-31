@@ -31,9 +31,9 @@ export class AuthService {
         return jwt.sign(payload, this.jwtSecret, { expiresIn: JWT_EXPIRES_IN });
     }
 
-    verifyToken(token: string) {
+    verifyToken(token: string): { id: string; role?: string } | null {
         try {
-            return jwt.verify(token, this.jwtSecret) as any;
+            return jwt.verify(token, this.jwtSecret) as { id: string; role?: string };
         } catch (err) {
             return null;
         }

@@ -27,13 +27,13 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
         if (!payload || !payload.id) return res.status(401).json({ message: "Invalid token" });
 
         // Attach user id & role to req.user (minimal)
-        (req as any).user = { id: payload.id, role: payload.role };
+        req.user = { id: payload.id, role: payload.role };
 
         // Optionally: load user from DB and attach full profile (without password)
         const userRepo = AppDataSource.getRepository(User);
         const user = await userRepo.findOneBy({ id: payload.id });
         if (user) {
-            (req as any).currentUser = user;
+            req.currentUser = user;
         }
 
         return next();
@@ -45,8 +45,9 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
 export function requireRole(role: string) {
     return (req: Request, res: Response, next: NextFunction) => {
-        const u = (req as any).user as { id: string; role?: string };
-        if (!u || u.role !== role) return res.status(403).json({ message: "Forbidden" });
+        if (!req.user || req.user.role !== role) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
         next();
     };
 }
