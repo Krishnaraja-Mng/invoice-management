@@ -44,30 +44,33 @@ export class InvoiceController {
             // compute per-line totals
             const lineItemsInput = dto.lineItems || [];
             const lineItems: LineItem[] = lineItemsInput.map((li) => {
-                const q = Number(li.quantity) || 0;
-                const up = Number(li.unitPrice) || 0;
+                const q = Number(li.quantity);
+                const up = Number(li.unitPrice);
+                if (isNaN(q) || isNaN(up)) {
+                    throw new Error("Invalid quantity or unit price");
+                }
                 return {
                     description: li.description,
                     quantity: q,
                     unitPrice: up,
-                    line_price_total: Number((q * up).toFixed(2)),
+                    line_price_total: Math.round(q * up * 100) / 100,
                 };
             });
 
-            const subtotal = Number(
-                lineItems.reduce((s, it) => s + (it.line_price_total || 0), 0).toFixed(2)
-            );
+            const subtotal = Math.round(
+                lineItems.reduce((s, it) => s + (it.line_price_total || 0), 0) * 100
+            ) / 100;
 
             const sgstPercent = Number(dto.sgstPercent || 0);
             const cgstPercent = Number(dto.cgstPercent || 0);
             const igstPercent = Number(dto.igstPercent || 0);
 
-            const sgstAmount = Number(((subtotal * sgstPercent) / 100).toFixed(2));
-            const cgstAmount = Number(((subtotal * cgstPercent) / 100).toFixed(2));
-            const igstAmount = Number(((subtotal * igstPercent) / 100).toFixed(2));
+            const sgstAmount = Math.round((subtotal * sgstPercent)) / 100;
+            const cgstAmount = Math.round((subtotal * cgstPercent)) / 100;
+            const igstAmount = Math.round((subtotal * igstPercent)) / 100;
 
-            const totalTaxAmount = Number((sgstAmount + cgstAmount + igstAmount).toFixed(2));
-            const totalAmount = Number((subtotal + totalTaxAmount).toFixed(2));
+            const totalTaxAmount = Math.round((sgstAmount + cgstAmount + igstAmount) * 100) / 100;
+            const totalAmount = Math.round((subtotal + totalTaxAmount) * 100) / 100;
 
             const invoice = this.invoiceRepo.create({
                 invoiceNumber: dto.invoiceNumber || null,
@@ -189,29 +192,32 @@ export class InvoiceController {
 
             const lineItemsInput = dto.lineItems || [];
             const lineItems: LineItem[] = lineItemsInput.map((li) => {
-                const q = Number(li.quantity) || 0;
-                const up = Number(li.unitPrice) || 0;
+                const q = Number(li.quantity);
+                const up = Number(li.unitPrice);
+                if (isNaN(q) || isNaN(up)) {
+                    throw new Error("Invalid quantity or unit price");
+                }
                 return {
                     description: li.description,
                     quantity: q,
                     unitPrice: up,
-                    line_price_total: Number((q * up).toFixed(2)),
+                    line_price_total: Math.round(q * up * 100) / 100,
                 };
             });
 
-            const subtotal = Number(
-                lineItems.reduce((s, it) => s + (it.line_price_total || 0), 0).toFixed(2)
-            );
+            const subtotal = Math.round(
+                lineItems.reduce((s, it) => s + (it.line_price_total || 0), 0) * 100
+            ) / 100;
 
             const sgstPercent = Number(dto.sgstPercent ?? existing.sgstPercent ?? 0);
             const cgstPercent = Number(dto.cgstPercent ?? existing.cgstPercent ?? 0);
             const igstPercent = Number(dto.igstPercent ?? existing.igstPercent ?? 0);
 
-            const sgstAmount = Number(((subtotal * sgstPercent) / 100).toFixed(2));
-            const cgstAmount = Number(((subtotal * cgstPercent) / 100).toFixed(2));
-            const igstAmount = Number(((subtotal * igstPercent) / 100).toFixed(2));
-            const totalTaxAmount = Number((sgstAmount + cgstAmount + igstAmount).toFixed(2));
-            const totalAmount = Number((subtotal + totalTaxAmount).toFixed(2));
+            const sgstAmount = Math.round((subtotal * sgstPercent)) / 100;
+            const cgstAmount = Math.round((subtotal * cgstPercent)) / 100;
+            const igstAmount = Math.round((subtotal * igstPercent)) / 100;
+            const totalTaxAmount = Math.round((sgstAmount + cgstAmount + igstAmount) * 100) / 100;
+            const totalAmount = Math.round((subtotal + totalTaxAmount) * 100) / 100;
 
             existing.invoiceNumber = dto.invoiceNumber ?? existing.invoiceNumber;
             existing.customerId = dto.customerId ?? existing.customerId;
