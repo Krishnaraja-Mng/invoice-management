@@ -1,7 +1,7 @@
 // shared styles
 import { StyleSheet, Platform, ViewStyle } from "react-native";
 
-export const CARD_MAX_WIDTH = 500;
+export const CARD_MAX_WIDTH = 400;
 export const CARD_MAX_HEIGHT = 600;
 export const ACTION_BUTTON_WIDTH = "60%";
 

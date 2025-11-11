@@ -1,15 +1,19 @@
 import React, { useContext, useState } from "react";
 import {
+    Image,
     View,
     Platform,
     KeyboardAvoidingView,
     ScrollView,
+    StyleSheet,
     useWindowDimensions,
 } from "react-native";
 import { TextInput, Button, Title } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import commonStyles, { CARD_MAX_WIDTH, CARD_MAX_HEIGHT } from "../styles/common";
+
+const loginImage = require("../../assets/images/login.png");
 
 /**
  * Key changes:
@@ -51,11 +55,16 @@ const LoginScreen: React.FC = () => {
                 <View style={[commonStyles.card, { width: computedWidth }]}>
                     <Title style={commonStyles.title}>Sign in</Title>
 
+                    <Image source={loginImage}
+                        style={styles.image}>
+                    </Image>
+
                     <View style={{ width: "100%" }}>
                         <TextInput
                             label="Email"
                             mode="outlined"
                             autoCapitalize="none"
+                            dense
                             keyboardType="email-address"
                             value={email}
                             onChangeText={setEmail}
@@ -68,6 +77,7 @@ const LoginScreen: React.FC = () => {
                         <TextInput
                             label="Password"
                             mode="outlined"
+                            dense
                             secureTextEntry
                             value={password}
                             onChangeText={setPassword}
@@ -95,4 +105,14 @@ const LoginScreen: React.FC = () => {
     );
 };
 
+const styles = StyleSheet.create({
+    image: {
+        width: "100%",
+        maxwidth: 350,
+        height: 200,
+        resizeMode: 'cover',
+        alignSelf: "center",
+        marginBottom: 12,
+    }
+})
 export default LoginScreen;
