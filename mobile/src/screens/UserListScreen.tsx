@@ -4,6 +4,7 @@ import { Card, Text, IconButton, Searchbar, FAB, Snackbar } from "react-native-p
 import { AuthContext } from "../context/AuthContext";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../navigation/AppStack";
+import { API_URL } from "../config";
 
 type UserListScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, "UserList">;
 
@@ -48,7 +49,7 @@ const UserListScreen: React.FC<Props> = ({ navigation }) => {
     const loadUsers = async () => {
         setLoading(true);
         try {
-            const response = await fetch("http://localhost:3000/users", {
+            const response = await fetch(`${API_URL}/users`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

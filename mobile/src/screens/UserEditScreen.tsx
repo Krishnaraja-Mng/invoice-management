@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
 import { AppStackParamList } from "../navigation/AppStack";
+import { API_URL } from "../config";
 
 type UserEditScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, "UserEdit">;
 type UserEditScreenRouteProp = RouteProp<AppStackParamList, "UserEdit">;
@@ -43,7 +44,7 @@ const UserEditScreen: React.FC<Props> = ({ navigation, route }) => {
     const loadUser = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3000/users/${userId}`, {
+            const response = await fetch(`${API_URL}/users/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -106,7 +107,7 @@ const UserEditScreen: React.FC<Props> = ({ navigation, route }) => {
                 updateData.password = password;
             }
 
-            const response = await fetch(`http://localhost:3000/users/${userId}`, {
+            const response = await fetch(`${API_URL}/users/${userId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -153,7 +154,7 @@ const UserEditScreen: React.FC<Props> = ({ navigation, route }) => {
     const confirmDeactivate = async () => {
         setSaving(true);
         try {
-            const response = await fetch(`http://localhost:3000/users/${userId}`, {
+            const response = await fetch(`${API_URL}/users/${userId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,

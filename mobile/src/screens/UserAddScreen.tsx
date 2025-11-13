@@ -4,6 +4,7 @@ import { TextInput, Button, Card, Text, Snackbar } from "react-native-paper";
 import { AuthContext } from "../context/AuthContext";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../navigation/AppStack";
+import { API_URL } from "../config";
 
 type UserAddScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, "UserAdd">;
 
@@ -52,7 +53,7 @@ const UserAddScreen: React.FC<Props> = ({ navigation }) => {
 
         setLoading(true);
         try {
-            const response = await fetch("http://localhost:3000/users", {
+            const response = await fetch(`${API_URL}/users`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
