@@ -8,7 +8,7 @@ import {
     StyleSheet,
     useWindowDimensions,
 } from "react-native";
-import { TextInput, Button, Title } from "react-native-paper";
+import { TextInput, Button, Title, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import commonStyles, { CARD_MAX_WIDTH, CARD_MAX_HEIGHT } from "../styles/common";
@@ -28,6 +28,7 @@ const LoginScreen: React.FC = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [saving, setSaving] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const window = useWindowDimensions();
     // Optional: calculate a safe width (subtract some padding if you want)
@@ -36,12 +37,20 @@ const LoginScreen: React.FC = () => {
 
     const onSubmit = async () => {
         if (!email || !password) return;
+        
+        // Clear any previous error message
+        setErrorMessage("");
         setSaving(true);
+        
         const result = await signIn(email.trim(), password);
         setSaving(false);
+        
         if (!result.ok) {
-            // show error (omitted here)
+            // Show error message if login failed
+            setErrorMessage("Invalid Credentials");
         }
+        // If result.ok is true, the user state in AuthContext will be updated,
+        // which will automatically trigger navigation to HomeScreen via InnerNavigator in App.tsx
     };
 
     return (
@@ -86,6 +95,13 @@ const LoginScreen: React.FC = () => {
                         />
                     </View>
 
+                    {/* Error message display */}
+                    {errorMessage ? (
+                        <View style={styles.errorContainer}>
+                            <Text style={styles.errorText}>{errorMessage}</Text>
+                        </View>
+                    ) : null}
+
                     <View style={commonStyles.buttonContainer}>
                         <View style={commonStyles.buttonWrapper}>
                             <Button mode="contained" onPress={onSubmit} loading={saving} disabled={saving} uppercase={false}>
@@ -113,6 +129,16 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         alignSelf: "center",
         marginBottom: 12,
+    },
+    errorContainer: {
+        width: "100%",
+        alignItems: "center",
+        marginBottom: 16,
+    },
+    errorText: {
+        color: "#d32f2f",
+        fontSize: 14,
+        textAlign: "center",
     }
 })
 export default LoginScreen;
