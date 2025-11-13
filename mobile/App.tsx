@@ -24,8 +24,8 @@ export default function App() {
         <AuthProvider>
             <PaperProvider>
                 <View style={styles.container}>
-                    <ConditionalMenuBar />
                     <NavigationContainer>
+                        <ConditionalMenuBar />
                         <InnerNavigator />
                     </NavigationContainer>
                     <StatusBar style="auto" />
