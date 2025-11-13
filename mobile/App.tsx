@@ -1,6 +1,6 @@
 import "react-native-gesture-handler"; // must be at top
 import "react-native-reanimated";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { enableScreens } from "react-native-screens";
@@ -10,7 +10,7 @@ import AuthStack from "./src/navigation/AuthStack";
 import AppStack from "./src/navigation/AppStack";
 import MenuBar from "./src/components/MenuBar";
 import { StatusBar } from "expo-status-bar";
-import * as Font from "expo-font";
+import { useFonts } from "expo-font";
 import { theme } from "./src/theme";
 
 enableScreens();
@@ -22,19 +22,12 @@ const InnerNavigator: React.FC = () => {
 };
 
 export default function App() {
-    const [fontsLoaded, setFontsLoaded] = useState(false);
-
-    useEffect(() => {
-        async function loadFonts() {
-            await Font.loadAsync({
-                'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
-                'Ubuntu-Medium': require('./assets/fonts/Ubuntu-Medium.ttf'),
-                'Ubuntu-Light': require('./assets/fonts/Ubuntu-Light.ttf'),
-            });
-            setFontsLoaded(true);
-        }
-        loadFonts();
-    }, []);
+    const [fontsLoaded] = useFonts({
+        'Ubuntu-Regular': require('./assets/fonts/Ubuntu-Regular.ttf'),
+        'Ubuntu-Medium': require('./assets/fonts/Ubuntu-Medium.ttf'),
+        'Ubuntu-Light': require('./assets/fonts/Ubuntu-Light.ttf'),
+        'Ubuntu-Bold': require('./assets/fonts/Ubuntu-Bold.ttf'),
+    });
 
     if (!fontsLoaded) {
         return null; // or a loading screen
