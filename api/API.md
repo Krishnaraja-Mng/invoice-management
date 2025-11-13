@@ -348,3 +348,214 @@ Or for validation errors:
 - `404 Not Found`: Resource not found
 - `409 Conflict`: Resource conflict (e.g., duplicate email)
 - `500 Internal Server Error`: Server error
+
+---
+
+### User Management
+
+All user management endpoints require authentication. Most operations require admin role.
+
+#### Get all users
+```
+GET /users
+```
+
+**Authorization:** Admin only
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": "uuid",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "user",
+    "address": "123 Main St",
+    "gstRegistered": false,
+    "gstNumber": null,
+    "panNumber": null,
+    "serviceProviderState": null,
+    "serviceProviderStateCode": null,
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+]
+```
+
+#### Get a single user
+```
+GET /users/:id
+```
+
+**Authorization:** Admin or self
+
+**Response:** `200 OK`
+```json
+{
+  "id": "uuid",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "role": "user",
+  "address": "123 Main St",
+  "gstRegistered": false,
+  "gstNumber": null,
+  "panNumber": null,
+  "serviceProviderState": null,
+  "serviceProviderStateCode": null,
+  "isActive": true,
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+#### Create a new user
+```
+POST /users
+```
+
+**Authorization:** Admin only
+
+**Request Body:**
+```json
+{
+  "name": "Jane Smith",
+  "email": "jane@example.com",
+  "password": "password123",
+  "role": "user",
+  "address": "456 Oak Ave",
+  "gstRegistered": true,
+  "gstNumber": "22AAAAA0000A1Z5",
+  "panNumber": "ABCDE1234F",
+  "serviceProviderState": "Maharashtra",
+  "serviceProviderStateCode": "27"
+}
+```
+
+**Note:** Only `name`, `email`, and `password` are required. All other fields are optional.
+
+**Response:** `201 Created`
+```json
+{
+  "id": "uuid",
+  "name": "Jane Smith",
+  "email": "jane@example.com",
+  "role": "user",
+  "address": "456 Oak Ave",
+  "gstRegistered": true,
+  "gstNumber": "22AAAAA0000A1Z5",
+  "panNumber": "ABCDE1234F",
+  "serviceProviderState": "Maharashtra",
+  "serviceProviderStateCode": "27",
+  "isActive": true,
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+#### Update a user
+```
+PUT /users/:id
+```
+
+**Authorization:** Admin or self (users can only update their own profile, admins can update any user)
+
+**Request Body:** (all fields optional)
+```json
+{
+  "name": "Jane Smith Updated",
+  "email": "jane.new@example.com",
+  "password": "newpassword123",
+  "role": "admin",
+  "address": "789 Pine Rd",
+  "gstRegistered": true,
+  "gstNumber": "22AAAAA0000A1Z6",
+  "panNumber": "ABCDE1234G",
+  "serviceProviderState": "Gujarat",
+  "serviceProviderStateCode": "24"
+}
+```
+
+**Note:** Only admins can update the `role` field.
+
+**Response:** `200 OK`
+```json
+{
+  "id": "uuid",
+  "name": "Jane Smith Updated",
+  "email": "jane.new@example.com",
+  "role": "admin",
+  "address": "789 Pine Rd",
+  "gstRegistered": true,
+  "gstNumber": "22AAAAA0000A1Z6",
+  "panNumber": "ABCDE1234G",
+  "serviceProviderState": "Gujarat",
+  "serviceProviderStateCode": "24",
+  "isActive": true,
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+#### Deactivate a user (Soft Delete)
+```
+DELETE /users/:id
+```
+
+**Authorization:** Admin only
+
+**Note:** This is a soft delete operation. The user record is not removed from the database but marked as inactive. Deactivated users cannot log in.
+
+**Restrictions:**
+- Cannot deactivate the system user (ID: 00000000-0000-0000-0000-000000000000)
+- Cannot deactivate yourself
+
+**Response:** `200 OK`
+```json
+{
+  "message": "User deactivated successfully",
+  "userId": "uuid"
+}
+```
+
+#### Reactivate a deactivated user
+```
+POST /users/:id/reactivate
+```
+
+**Authorization:** Admin only
+
+**Response:** `200 OK`
+```json
+{
+  "message": "User reactivated successfully",
+  "userId": "uuid"
+}
+```
+
+### User Management Error Responses
+
+**400 Bad Request**
+- Missing required fields
+- Invalid data format
+- Email already exists
+- Password too short
+- Cannot deactivate system user
+- Cannot deactivate yourself
+- User already active/deactivated
+
+**401 Unauthorized**
+- No authentication token provided
+- Invalid or expired token
+- Account has been deactivated (login attempt)
+
+**403 Forbidden**
+- Not authorized to perform this action (non-admin trying admin action)
+
+**404 Not Found**
+- User not found
+
+**500 Internal Server Error**
+- Database error
+- Unexpected server error
+

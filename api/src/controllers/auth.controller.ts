@@ -74,6 +74,11 @@ export class AuthController {
                 return res.status(401).json({ message: "Invalid credentials" });
             }
 
+            // Check if user is active
+            if (!user.isActive) {
+                return res.status(401).json({ message: "Account has been deactivated" });
+            }
+
             const authService = this.getAuthService();
             const ok = await authService.comparePassword(dto.password, user.password);
             if (!ok) return res.status(401).json({ message: "Invalid credentials" });

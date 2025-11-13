@@ -5,6 +5,7 @@ import cors from "cors";
 import { AppDataSource } from "./data-source";
 import invoiceRoutes from "./routes/invoices";
 import authRoutes from "./routes/auth";
+import userRoutes from "./routes/users";
 import { authMiddleware } from "./middleware/auth.middleware";
 
 dotenv.config();
@@ -46,6 +47,8 @@ AppDataSource.initialize()
         app.use("/auth", authRoutes);
 
         app.use("/invoices", authMiddleware, invoiceRoutes);
+
+        app.use("/users", authMiddleware, userRoutes);
 
         app.get("/health", (_req, res) => res.json({ ok: true }));
 
