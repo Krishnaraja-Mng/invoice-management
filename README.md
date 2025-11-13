@@ -77,10 +77,11 @@ A full-stack invoice management application with a REST API backend and React Na
    psql -U postgres -c "CREATE DATABASE invoices_db;"
    ```
 
-6. Run migrations:
+6. **Run migrations to create database tables**:
    ```bash
    npm run typeorm:run
    ```
+   > ⚠️ **Important**: You must run migrations before starting the server or seeding data. This creates all required database tables.
 
 7. (Optional) Seed default users:
    ```bash
@@ -195,6 +196,47 @@ npm run build
 cd mobile
 npm start
 ```
+
+## Troubleshooting
+
+### Database Error: "code: 42P01" (undefined_table)
+
+**Problem**: When trying to login or use the API, you get a PostgreSQL error with code `42P01` indicating the table doesn't exist.
+
+**Solution**: Run the database migrations to create all required tables:
+```bash
+cd api
+npm run typeorm:run
+```
+
+The migrations will create:
+- `users` table
+- `customers` table
+- `invoices` table
+- All necessary indexes and foreign key constraints
+
+After running migrations, you can optionally seed the default admin user:
+```bash
+npm run seed
+```
+
+### JWT_SECRET Error
+
+**Problem**: Error message "JWT_SECRET environment variable must be set"
+
+**Solution**: Ensure you have created the `.env` file in the `api` directory:
+```bash
+cd api
+cp .env.example .env
+# Edit .env and set a strong JWT_SECRET
+```
+
+### Windows-Specific Issues
+
+On Windows, ensure:
+1. PostgreSQL service is running
+2. Database connection string uses proper format in `.env`
+3. Migrations are run before starting the server
 
 ## Security Notes
 
