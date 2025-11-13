@@ -12,9 +12,14 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthStack: React.FC = () => {
     return (
-        <Stack.Navigator initialRouteName="Login">
-            <Stack.Screen name="Login" component={LoginScreen} options={{ title: "Sign in" }} />
-            <Stack.Screen name="Register" component={RegisterScreen} options={{ title: "Create account" }} />
+        <Stack.Navigator 
+            initialRouteName="Login"
+            screenOptions={{
+                headerShown: false, // Hide the navigation header for auth screens
+            }}
+        >
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
         </Stack.Navigator>
     );
 };

@@ -15,20 +15,25 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     if (!auth || !auth.startsWith("Bearer ")) return res.status(401).json({ message: "Missing token" });
 
     const token = auth.slice("Bearer ".length).trim();
-    const secret = process.env.JWT_SECRET || "change-this-secret";
+    const secret = process.env.JWT_SECRET;
+    
+    if (!secret) {
+        console.error("CRITICAL: JWT_SECRET environment variable is not set!");
+        return res.status(500).json({ message: "Server configuration error" });
+    }
 
     try {
         const payload = jwt.verify(token, secret) as JwtPayload;
         if (!payload || !payload.id) return res.status(401).json({ message: "Invalid token" });
 
         // Attach user id & role to req.user (minimal)
-        (req as any).user = { id: payload.id, role: payload.role };
+        req.user = { id: payload.id, role: payload.role };
 
         // Optionally: load user from DB and attach full profile (without password)
         const userRepo = AppDataSource.getRepository(User);
         const user = await userRepo.findOneBy({ id: payload.id });
         if (user) {
-            (req as any).currentUser = user;
+            req.currentUser = user;
         }
 
         return next();
@@ -40,8 +45,9 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
 export function requireRole(role: string) {
     return (req: Request, res: Response, next: NextFunction) => {
-        const u = (req as any).user as { id?: string; role?: string } | undefined;
-        if (!u || u.role !== role) return res.status(403).json({ message: "Forbidden" });
+        if (!req.user || req.user.role !== role) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
         next();
     };
 }

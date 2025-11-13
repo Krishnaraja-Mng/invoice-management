@@ -5,6 +5,7 @@ import cors from "cors";
 import { AppDataSource } from "./data-source";
 import invoiceRoutes from "./routes/invoices";
 import authRoutes from "./routes/auth";
+import userRoutes from "./routes/users";
 import { authMiddleware } from "./middleware/auth.middleware";
 
 dotenv.config();
@@ -47,6 +48,8 @@ AppDataSource.initialize()
 
         app.use("/invoices", authMiddleware, invoiceRoutes);
 
+        app.use("/users", authMiddleware, userRoutes);
+
         app.get("/health", (_req, res) => res.json({ ok: true }));
 
         const port = process.env.PORT || 4000;
@@ -57,7 +60,7 @@ AppDataSource.initialize()
     });
 
 // Optional: a friendly error handler to return 403 for blocked CORS requests
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     if (err && /CORS/i.test(err.message)) {
         return res.status(403).json({ message: "CORS error: origin not allowed" });
     }

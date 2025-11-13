@@ -7,8 +7,8 @@ export async function checkInvoiceOwnerOrAdmin(req: Request, res: Response, next
         const invoiceId = req.params.id;
         if (!invoiceId) return res.status(400).json({ message: "Missing invoice id" });
 
-        const user = (req as any).user as { id?: string; role?: string } | undefined;
-        if (!user || !user.id) return res.status(401).json({ message: "Unauthenticated" });
+        const user = req.user;
+        if (!user?.id) return res.status(401).json({ message: "Unauthenticated" });
 
         // Admin bypass
         if (user.role === "admin") return next();

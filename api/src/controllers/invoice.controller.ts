@@ -36,38 +36,41 @@ export class InvoiceController {
     async create(req: Request, res: Response) {
         try {
             const dto = plainToInstance(CreateInvoiceDto, req.body);
-            const errors = await validate(dto as any);
+            const errors = await validate(dto);
             if (errors.length > 0) {
                 return res.status(400).json({ errors });
             }
 
             // compute per-line totals
-            const lineItemsInput = (dto as any).lineItems || [];
-            const lineItems: LineItem[] = lineItemsInput.map((li: any) => {
-                const q = Number(li.quantity) || 0;
-                const up = Number(li.unitPrice) || 0;
+            const lineItemsInput = dto.lineItems || [];
+            const lineItems: LineItem[] = lineItemsInput.map((li) => {
+                const q = Number(li.quantity);
+                const up = Number(li.unitPrice);
+                if (isNaN(q) || isNaN(up)) {
+                    throw new Error("Invalid quantity or unit price");
+                }
                 return {
                     description: li.description,
                     quantity: q,
                     unitPrice: up,
-                    line_price_total: Number((q * up).toFixed(2)),
+                    line_price_total: Math.round(q * up * 100) / 100,
                 };
             });
 
-            const subtotal = Number(
-                lineItems.reduce((s, it) => s + (it.line_price_total || 0), 0).toFixed(2)
-            );
+            const subtotal = Math.round(
+                lineItems.reduce((s, it) => s + (it.line_price_total || 0), 0) * 100
+            ) / 100;
 
             const sgstPercent = Number(dto.sgstPercent || 0);
             const cgstPercent = Number(dto.cgstPercent || 0);
             const igstPercent = Number(dto.igstPercent || 0);
 
-            const sgstAmount = Number(((subtotal * sgstPercent) / 100).toFixed(2));
-            const cgstAmount = Number(((subtotal * cgstPercent) / 100).toFixed(2));
-            const igstAmount = Number(((subtotal * igstPercent) / 100).toFixed(2));
+            const sgstAmount = Math.round((subtotal * sgstPercent)) / 100;
+            const cgstAmount = Math.round((subtotal * cgstPercent)) / 100;
+            const igstAmount = Math.round((subtotal * igstPercent)) / 100;
 
-            const totalTaxAmount = Number((sgstAmount + cgstAmount + igstAmount).toFixed(2));
-            const totalAmount = Number((subtotal + totalTaxAmount).toFixed(2));
+            const totalTaxAmount = Math.round((sgstAmount + cgstAmount + igstAmount) * 100) / 100;
+            const totalAmount = Math.round((subtotal + totalTaxAmount) * 100) / 100;
 
             const invoice = this.invoiceRepo.create({
                 invoiceNumber: dto.invoiceNumber || null,
@@ -86,12 +89,11 @@ export class InvoiceController {
                 status: "draft",
             } as Partial<Invoice>);
 
-            // set audit and ownership fields from authenticated user if available
-            const authUser = (req as any).user as { id?: string } | undefined;
-            if (authUser && authUser.id) {
-                invoice.createdById = authUser.id;
-                invoice.updatedById = authUser.id;
-                invoice.invoiceBelongsToId = authUser.id;
+            // set audit and ownership fields from authenticated user
+            if (req.user?.id) {
+                invoice.createdById = req.user.id;
+                invoice.updatedById = req.user.id;
+                invoice.invoiceBelongsToId = req.user.id;
             }
 
             const saved = await this.invoiceRepo.save(invoice);
@@ -106,8 +108,8 @@ export class InvoiceController {
     // Supports: page, limit, status, customerId query params
     async list(req: Request, res: Response) {
         try {
-            const user = (req as any).user as { id?: string; role?: string } | undefined;
-            if (!user || !user.id) return res.status(401).json({ message: "Unauthenticated" });
+            const user = req.user;
+            if (!user?.id) return res.status(401).json({ message: "Unauthenticated" });
 
             const page = Math.max(1, parseInt((req.query.page as string) || "1", 10));
             const limit = Math.min(100, Math.max(1, parseInt((req.query.limit as string) || "20", 10)));
@@ -183,36 +185,39 @@ export class InvoiceController {
             if (!existing) return res.status(404).json({ message: "Not found" });
 
             const dto = plainToInstance(CreateInvoiceDto, req.body);
-            const errors = await validate(dto as any);
+            const errors = await validate(dto);
             if (errors.length > 0) {
                 return res.status(400).json({ errors });
             }
 
-            const lineItemsInput = (dto as any).lineItems || [];
-            const lineItems: LineItem[] = lineItemsInput.map((li: any) => {
-                const q = Number(li.quantity) || 0;
-                const up = Number(li.unitPrice) || 0;
+            const lineItemsInput = dto.lineItems || [];
+            const lineItems: LineItem[] = lineItemsInput.map((li) => {
+                const q = Number(li.quantity);
+                const up = Number(li.unitPrice);
+                if (isNaN(q) || isNaN(up)) {
+                    throw new Error("Invalid quantity or unit price");
+                }
                 return {
                     description: li.description,
                     quantity: q,
                     unitPrice: up,
-                    line_price_total: Number((q * up).toFixed(2)),
+                    line_price_total: Math.round(q * up * 100) / 100,
                 };
             });
 
-            const subtotal = Number(
-                lineItems.reduce((s, it) => s + (it.line_price_total || 0), 0).toFixed(2)
-            );
+            const subtotal = Math.round(
+                lineItems.reduce((s, it) => s + (it.line_price_total || 0), 0) * 100
+            ) / 100;
 
             const sgstPercent = Number(dto.sgstPercent ?? existing.sgstPercent ?? 0);
             const cgstPercent = Number(dto.cgstPercent ?? existing.cgstPercent ?? 0);
             const igstPercent = Number(dto.igstPercent ?? existing.igstPercent ?? 0);
 
-            const sgstAmount = Number(((subtotal * sgstPercent) / 100).toFixed(2));
-            const cgstAmount = Number(((subtotal * cgstPercent) / 100).toFixed(2));
-            const igstAmount = Number(((subtotal * igstPercent) / 100).toFixed(2));
-            const totalTaxAmount = Number((sgstAmount + cgstAmount + igstAmount).toFixed(2));
-            const totalAmount = Number((subtotal + totalTaxAmount).toFixed(2));
+            const sgstAmount = Math.round((subtotal * sgstPercent)) / 100;
+            const cgstAmount = Math.round((subtotal * cgstPercent)) / 100;
+            const igstAmount = Math.round((subtotal * igstPercent)) / 100;
+            const totalTaxAmount = Math.round((sgstAmount + cgstAmount + igstAmount) * 100) / 100;
+            const totalAmount = Math.round((subtotal + totalTaxAmount) * 100) / 100;
 
             existing.invoiceNumber = dto.invoiceNumber ?? existing.invoiceNumber;
             existing.customerId = dto.customerId ?? existing.customerId;
@@ -228,9 +233,8 @@ export class InvoiceController {
             existing.igstPercent = igstPercent;
             existing.totalAmount = totalAmount;
 
-            const authUser = (req as any).user as { id?: string } | undefined;
-            if (authUser && authUser.id) {
-                existing.updatedById = authUser.id;
+            if (req.user?.id) {
+                existing.updatedById = req.user.id;
             }
 
             const saved = await this.invoiceRepo.save(existing);

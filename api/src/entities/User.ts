@@ -48,6 +48,10 @@ export class User {
     @Column({ type: "varchar", length: 2, name: "service_provider_state_code", nullable: true })
     serviceProviderStateCode!: string | null;
 
+    // Soft delete flag
+    @Column({ type: "boolean", name: "is_active", default: true })
+    isActive!: boolean;
+
     // created_by / updated_by (self-referential). DB default sentinel UUID inserted by migration.
     @Column({
         type: "uuid",

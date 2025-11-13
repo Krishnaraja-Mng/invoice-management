@@ -1,15 +1,19 @@
 import React, { useContext, useState } from "react";
 import {
+    Image,
     View,
     Platform,
     KeyboardAvoidingView,
     ScrollView,
+    StyleSheet,
     useWindowDimensions,
 } from "react-native";
-import { TextInput, Button, Title } from "react-native-paper";
+import { TextInput, Button, Title, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import commonStyles, { CARD_MAX_WIDTH, CARD_MAX_HEIGHT } from "../styles/common";
+
+const loginImage = require("../../assets/images/login.png");
 
 /**
  * Key changes:
@@ -24,6 +28,7 @@ const LoginScreen: React.FC = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [saving, setSaving] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const window = useWindowDimensions();
     // Optional: calculate a safe width (subtract some padding if you want)
@@ -32,12 +37,20 @@ const LoginScreen: React.FC = () => {
 
     const onSubmit = async () => {
         if (!email || !password) return;
+        
+        // Clear any previous error message
+        setErrorMessage("");
         setSaving(true);
+        
         const result = await signIn(email.trim(), password);
         setSaving(false);
+        
         if (!result.ok) {
-            // show error (omitted here)
+            // Show error message if login failed
+            setErrorMessage("Invalid Credentials");
         }
+        // If result.ok is true, the user state in AuthContext will be updated,
+        // which will automatically trigger navigation to HomeScreen via InnerNavigator in App.tsx
     };
 
     return (
@@ -51,11 +64,16 @@ const LoginScreen: React.FC = () => {
                 <View style={[commonStyles.card, { width: computedWidth }]}>
                     <Title style={commonStyles.title}>Sign in</Title>
 
+                    <Image source={loginImage}
+                        style={styles.image}>
+                    </Image>
+
                     <View style={{ width: "100%" }}>
                         <TextInput
                             label="Email"
                             mode="outlined"
                             autoCapitalize="none"
+                            dense
                             keyboardType="email-address"
                             value={email}
                             onChangeText={setEmail}
@@ -68,6 +86,7 @@ const LoginScreen: React.FC = () => {
                         <TextInput
                             label="Password"
                             mode="outlined"
+                            dense
                             secureTextEntry
                             value={password}
                             onChangeText={setPassword}
@@ -75,6 +94,13 @@ const LoginScreen: React.FC = () => {
                             disabled={saving}
                         />
                     </View>
+
+                    {/* Error message display */}
+                    {errorMessage ? (
+                        <View style={styles.errorContainer}>
+                            <Text style={styles.errorText}>{errorMessage}</Text>
+                        </View>
+                    ) : null}
 
                     <View style={commonStyles.buttonContainer}>
                         <View style={commonStyles.buttonWrapper}>
@@ -95,4 +121,29 @@ const LoginScreen: React.FC = () => {
     );
 };
 
+const styles = StyleSheet.create({
+    image: {
+        width: "100%",
+        maxwidth: 350,
+        height: 200,
+        resizeMode: 'cover',
+        alignSelf: "center",
+        marginBottom: 12,
+    },
+    errorContainer: {
+        width: "100%",
+        height: 32, // 2rem (assuming 1rem = 16px)
+        backgroundColor: "#ecacacff",
+        borderRadius: 5,
+        justifyContent: "center", // Vertically center the content
+        alignItems: "center",
+        marginBottom: 16,
+    },
+    errorText: {
+        color: "#d32f2f",
+        fontSize: 14,
+        fontWeight: "bold",
+        textAlign: "center",
+    }
+})
 export default LoginScreen;

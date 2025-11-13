@@ -11,7 +11,11 @@ export class AuthService {
 
     constructor(userRepo: Repository<User>) {
         this.userRepo = userRepo;
-        this.jwtSecret = process.env.JWT_SECRET || "change-this-secret";
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            throw new Error("JWT_SECRET environment variable must be set");
+        }
+        this.jwtSecret = secret;
     }
 
     async hashPassword(plain: string): Promise<string> {
@@ -27,9 +31,9 @@ export class AuthService {
         return jwt.sign(payload, this.jwtSecret, { expiresIn: JWT_EXPIRES_IN });
     }
 
-    verifyToken(token: string) {
+    verifyToken(token: string): { id: string; role?: string } | null {
         try {
-            return jwt.verify(token, this.jwtSecret) as any;
+            return jwt.verify(token, this.jwtSecret) as { id: string; role?: string };
         } catch (err) {
             return null;
         }
