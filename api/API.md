@@ -7,15 +7,15 @@ http://localhost:4000
 
 ## Default Admin Credentials
 
-For testing and development purposes, you can seed a default admin user:
+A default admin user is automatically created when you run the database migrations:
 
-- **Email**: `admin@example.com`
+- **Email**: `admin@varcade.com`
 - **Password**: `admin@123`
 
-To create the default admin user, run the seed script:
+The admin user is created by the initial migration (`0000000000001-InitialSchema.ts`) when you run:
 ```bash
 cd api
-npm run seed
+npm run typeorm:run
 ```
 
 > ⚠️ **Security Note**: Change the admin password immediately in production environments.

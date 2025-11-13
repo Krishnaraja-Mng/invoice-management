@@ -81,22 +81,18 @@ A full-stack invoice management application with a REST API backend and React Na
    ```bash
    npm run typeorm:run
    ```
-   > ⚠️ **Important**: You must run migrations before starting the server or seeding data. This creates all required database tables.
+   > ⚠️ **Important**: Running migrations creates all required database tables and inserts a default admin user.
+   > 
+   > **Default Admin Credentials** (created automatically):
+   > - Email: `admin@varcade.com`
+   > - Password: `admin@123`
 
-7. (Optional) Seed default users:
-   ```bash
-   npm run seed
-   ```
-   This creates a default admin user:
-   - Email: `admin@example.com`
-   - Password: `admin@123`
-
-8. Start the development server:
+7. Start the development server:
    ```bash
    npm run dev
    ```
 
-9. The API will be available at http://localhost:4000
+8. The API will be available at http://localhost:4000
 
 #### Mobile App Setup
 

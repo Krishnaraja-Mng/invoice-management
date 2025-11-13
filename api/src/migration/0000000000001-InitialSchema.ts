@@ -100,6 +100,13 @@ export class InitialSchema0000000000001 implements MigrationInterface {
             VALUES ('00000000-0000-0000-0000-000000000000', 'system', NULL, '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000')
             ON CONFLICT (id) DO NOTHING;
         `);
+
+        // Insert the default admin user
+        await queryRunner.query(`
+            INSERT INTO users (name, email, password, role, created_by, updated_by)
+            VALUES ('Admin User', 'admin@varcade.com', '$2a$10$4T5GanZ9yjCIb5k9c43YvefP0yMChHwl41GJ62BdvEyMfA27.ZmVu', 'admin', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000')
+            ON CONFLICT (email) DO NOTHING;
+        `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
