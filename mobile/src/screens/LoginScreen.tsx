@@ -132,12 +132,17 @@ const styles = StyleSheet.create({
     },
     errorContainer: {
         width: "100%",
+        height: 32, // 2rem (assuming 1rem = 16px)
+        backgroundColor: "#ecacacff",
+        borderRadius: 5,
+        justifyContent: "center", // Vertically center the content
         alignItems: "center",
         marginBottom: 16,
     },
     errorText: {
         color: "#d32f2f",
         fontSize: 14,
+        fontWeight: "bold",
         textAlign: "center",
     }
 })
