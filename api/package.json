@@ -8,6 +8,7 @@
         "start": "node dist/index.js",
         "typeorm:run": "ts-node ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
         "typeorm:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert -d ./src/data-source.ts",
+        "seed": "ts-node ../scripts/seed-system-user.ts",
         "lint": "eslint 'src/**/*.ts'"
     },
     "dependencies": {

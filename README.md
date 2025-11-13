@@ -82,12 +82,20 @@ A full-stack invoice management application with a REST API backend and React Na
    npm run typeorm:run
    ```
 
-7. Start the development server:
+7. (Optional) Seed default users:
+   ```bash
+   npm run seed
+   ```
+   This creates a default admin user:
+   - Email: `admin@example.com`
+   - Password: `admin@123`
+
+8. Start the development server:
    ```bash
    npm run dev
    ```
 
-8. The API will be available at http://localhost:4000
+9. The API will be available at http://localhost:4000
 
 #### Mobile App Setup
 

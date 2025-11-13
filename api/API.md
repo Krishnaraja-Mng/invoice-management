@@ -5,6 +5,21 @@
 http://localhost:4000
 ```
 
+## Default Admin Credentials
+
+For testing and development purposes, you can seed a default admin user:
+
+- **Email**: `admin@example.com`
+- **Password**: `admin@123`
+
+To create the default admin user, run the seed script:
+```bash
+cd api
+npm run seed
+```
+
+> ⚠️ **Security Note**: Change the admin password immediately in production environments.
+
 ## Authentication
 Most endpoints require JWT authentication. Include the token in the Authorization header:
 ```
