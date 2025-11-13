@@ -24,7 +24,7 @@ export default function App() {
         <AuthProvider>
             <PaperProvider>
                 <View style={styles.container}>
-                    <MenuBar />
+                    <ConditionalMenuBar />
                     <NavigationContainer>
                         <InnerNavigator />
                     </NavigationContainer>
@@ -34,6 +34,13 @@ export default function App() {
         </AuthProvider>
     );
 }
+
+// ConditionalMenuBar only shows when user is authenticated
+const ConditionalMenuBar: React.FC = () => {
+    const { user } = useContext(AuthContext);
+    // Only show MenuBar when user is logged in
+    return user ? <MenuBar /> : null;
+};
 
 const styles = StyleSheet.create({
     container: {
